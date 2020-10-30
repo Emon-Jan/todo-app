@@ -1,38 +1,79 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.layout {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  height: 100vh;
+}
+
+.app-title {
+  color: #f2dede;
+  font-size: 64px;
+}
+
+.app-title__box {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.text-input {
+  width: 45%;
+  max-width: 600px;
+  min-height: 50px;
+  min-width: 300px;
+  padding: 0;
+  margin: 0;
+  padding-left: 40px;
+  font-size: large;
+  border-color: transparent !important;
+  border-right-width: 0px !important;
+  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
+    0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.text-input__edit {
+  max-width: 600px;
+  min-height: 50px;
+  min-width: 300px;
+  padding: 0;
+  margin: 0;
+  padding-left: 40px;
+  font-size: large;
+  border-color: transparent !important;
+  border-right-width: 0px !important;
+  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
+    0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+}
+
+.text-input:focus,
+.text-input:hover,
+.text-input__edit:focus,
+.text-input__edit:hover {
+  border-color: transparent !important;
+  border-right-width: 0px !important;
+  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
+    0 3px 6px 0 rgba(0, 0, 0, 0.12), 0 5px 12px 4px rgba(0, 0, 0, 0.09);
+}
+
+.text-input::placeholder {
+  font-style: italic;
+  color: #f0f2f5;
+}
+
+.card-panel {
+  width: 45%;
+  max-width: 600px;
+  min-width: 300px;
+  font-size: large;
+  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
+    0 3px 6px 0 rgba(0, 0, 0, 0.12);
+}
+
+.ant-card-body {
+  padding: 0px !important;
+}
+
+.list-item {
+  margin-left: 40px;
+  font-size: large;
 }
