@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, Input, List, Divider, Checkbox } from "antd";
+import { Card, Input, List, Divider } from "antd";
 import Icon, { DownOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import "./App.css";
