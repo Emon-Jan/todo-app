@@ -1,14 +1,13 @@
 import React from "react";
-
 import { Input, List, Divider } from "antd";
-import Icon from "@ant-design/icons";
+import PropTypes from "prop-types";
 
+import Icon from "@ant-design/icons";
 import Close from "../../icons/CloseIcon";
 import CheckedCircleIcon from "../../icons/CheckedCircleIcon";
 import UnCheckedCircleIcon from "../../icons/UncheckedCircleIcon";
-import PropTypes from "prop-types";
 
-function TodoList(props) {
+const TodoList = (props) => {
   const checkbox = (item) => {
     if (item.isCompleted) {
       return (
@@ -79,9 +78,9 @@ function TodoList(props) {
       </List>
     </div>
   ));
-}
+};
 
-TodoList.propType = {
+TodoList.propTypes = {
   isEdit: PropTypes.bool.isRequired,
   todoList: PropTypes.array.isRequired,
   isHovered: PropTypes.object.isRequired,
