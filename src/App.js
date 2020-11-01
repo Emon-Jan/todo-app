@@ -1,14 +1,21 @@
 import React, { Component } from "react";
-import { Card, Input, List, Divider } from "antd";
-import Icon, { DownOutlined } from "@ant-design/icons";
+import { Card, Input, Divider, Button } from "antd";
+import { DownOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import "./App.css";
-import Close from "./icons/CloseIcon";
-import CheckedCircleIcon from "./icons/CheckedCircleIcon";
-import UnCheckedCircleIcon from "./icons/UncheckedCircleIcon";
+
+import { Link, Route, Switch, withRouter } from "react-router-dom";
 import uuid from "react-uuid";
 
+import Todos from "./components/todos/Todos";
+import Activetodos from "./components/activetodo/Activetodos";
+import Completetodos from "./components/completetodo/Completetodos";
+
 class App extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   state = {
     todo: "",
     editedTodo: "",
@@ -87,92 +94,76 @@ class App extends Component {
     this.setState({ todoList });
   };
 
+  handleMouseEnter = (index) => {
+    this.setState((prevState) => {
+      return { isHovered: { ...prevState.isHovered, [index]: true } };
+    });
+  };
+
+  handleMouseLeave = (index) => {
+    this.setState((prevState) => {
+      return { isHovered: { ...prevState.isHovered, [index]: false } };
+    });
+  };
+
   render() {
-    const checkbox = (item) => {
-      if (item.isCompleted) {
-        return (
-          <Icon
-            component={CheckedCircleIcon}
-            className="check-icon"
-            onClick={() => this.handleCheck(item)}
-          />
-        );
+    const itemLeft = () => {
+      const len = this.state.todoList.filter((item) => !item.isCompleted)
+        .length;
+      if (len > 1) {
+        return <span className="items-left">{len} items left</span>;
       }
-      return (
-        <Icon
-          component={UnCheckedCircleIcon}
-          className="check-icon"
-          onClick={() => this.handleCheck(item)}
-        />
-      );
+      return <span className="items-left">{len} item left</span>;
     };
 
-    const todoEditableList = (item, index) => {
-      if (this.state.isEdit && item.id === this.state.editTodoId) {
-        return (
-          <Input
-            className="text-input__edit"
-            autoFocus={true}
-            name="editTodo"
-            onChange={this.handleEditOnChange}
-            onPressEnter={this.updateTodo}
-            onClick={this.updateTodo}
-            value={this.state.editedTodo}
-          />
-        );
-      }
-      return (
-        <div
-          onMouseEnter={() => {
-            this.setState((prevState) => {
-              return { isHovered: { ...prevState.isHovered, [index]: true } };
-            });
-          }}
-          onMouseLeave={() => {
-            this.setState((prevState) => {
-              return { isHovered: { ...prevState.isHovered, [index]: false } };
-            });
-          }}
-        >
-          {checkbox(item)}
-          <span className={item.isCompleted ? "check-text" : ""}>
-            {item.todo}
-            {this.state.isHovered[index] && (
-              <Icon
-                component={Close}
-                className="close-icon"
-                onClick={() => this.deleteSingleTodo(item)}
-              />
-            )}
-          </span>
-        </div>
+    const renderClearCompleted = () => {
+      const notCompletedTodoList = this.state.todoList.filter(
+        (item) => !item.isCompleted
       );
-    };
-
-    const renderedElement = () => {
-      return this.state.todoList.map((item, index) => (
-        <div key={index}>
-          <Divider className="divider" />
-          <List
-            itemLayout="horizontal"
-            className="list-item"
-            onDoubleClick={(e) => {
+      const len = this.state.todoList.filter((item) => item.isCompleted).length;
+      if (len > 0) {
+        return (
+          <a
+            className="clear-footer-button"
+            onClick={(e) => {
               e.preventDefault();
-              this.handleDoubleClick(item.id);
+              this.setState({ todoList: notCompletedTodoList });
             }}
           >
-            {todoEditableList(item, index)}
-          </List>
-        </div>
-      ));
+            Clear Completed
+          </a>
+        );
+      }
+      return null;
     };
 
-    const itemLeft = () => {
-      return this.state.todoList.filter((item) => !item.isCompleted).length;
+    const footerButtonStyle = (pathName) => {
+      if (this.props.location.pathname === pathName) {
+        return "footer-button__active";
+      }
+      return "footer-button";
     };
 
     const renderedCard = () => {
       if (this.state.todoList.length) {
+        const todoProps = {
+          isEdit: this.state.isEdit,
+          isHovered: this.state.isHovered,
+          editTodoId: this.state.editTodoId,
+          editedTodo: this.state.editedTodo,
+          updateTodo: this.updateTodo,
+          deleteSingleTodo: this.deleteSingleTodo,
+          handleCheck: this.handleCheck,
+          handleEditOnChange: this.handleEditOnChange,
+          handleMouseEnter: this.handleMouseEnter,
+          handleMouseLeave: this.handleMouseLeave,
+          handleDoubleClick: this.handleDoubleClick,
+        };
+
+        const todoList = this.state.todoList.slice();
+        const activeTodoList = todoList.filter((item) => !item.isCompleted);
+        const completedTodoList = todoList.filter((item) => item.isCompleted);
+
         return (
           <div className="layout">
             <Card className="card-panel">
@@ -185,12 +176,67 @@ class App extends Component {
                 onPressEnter={this.createTodo}
                 value={this.state.todo}
               />
-              {renderedElement()}
+              <Switch>
+                <Route
+                  path="/active"
+                  render={(props) => (
+                    <Activetodos
+                      {...props}
+                      {...todoProps}
+                      todoList={activeTodoList}
+                    />
+                  )}
+                />
+                <Route
+                  path="/completed"
+                  render={(props) => (
+                    <Completetodos
+                      {...props}
+                      {...todoProps}
+                      todoList={completedTodoList}
+                    />
+                  )}
+                />
+                <Route
+                  path="/"
+                  render={(props) => (
+                    <Todos
+                      {...props}
+                      {...todoProps}
+                      todoList={this.state.todoList}
+                    />
+                  )}
+                />
+              </Switch>
               <Divider className="divider" />
               <div className="card-footer">
-                <div>{`${itemLeft()} items left`}</div>
-                <div>h1</div>
-                <div>h3</div>
+                <div className="card-footer__first">{itemLeft()}</div>
+                <div className="card-footer__second">
+                  <Button
+                    type="text"
+                    size="small"
+                    className={footerButtonStyle("/")}
+                  >
+                    <Link to="/">All</Link>
+                  </Button>
+                  <Button
+                    type="text"
+                    size="small"
+                    className={footerButtonStyle("/active")}
+                  >
+                    <Link to="/active">Active</Link>
+                  </Button>
+                  <Button
+                    type="text"
+                    size="small"
+                    className={footerButtonStyle("/completed")}
+                  >
+                    <Link to="/completed">Completed</Link>
+                  </Button>
+                </div>
+                <div className="card-footer__third">
+                  {renderClearCompleted()}
+                </div>
               </div>
             </Card>
             <div className="card-div-one"></div>
@@ -225,4 +271,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default withRouter(App);
