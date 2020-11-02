@@ -12,6 +12,7 @@ import "antd/dist/antd.css";
 import "./App.css";
 
 class App extends Component {
+  // eslint-disable-next-line no-useless-constructor
   constructor(props) {
     super(props);
   }
@@ -174,6 +175,7 @@ class App extends Component {
       const len = this.props.todoList.filter((item) => item.isCompleted).length;
       if (len > 0) {
         return (
+          // eslint-disable-next-line jsx-a11y/anchor-is-valid
           <a
             className="clear-footer-button"
             onClick={(e) => {
