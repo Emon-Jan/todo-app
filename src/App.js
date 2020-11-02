@@ -1,114 +1,164 @@
 import React, { Component } from "react";
-import { Card, Input, Divider, Button } from "antd";
-import { DownOutlined } from "@ant-design/icons";
-import "antd/dist/antd.css";
-import "./App.css";
-
-import { Link, Route, Switch, withRouter } from "react-router-dom";
+import { connect } from "react-redux";
 import uuid from "react-uuid";
-
 import Todos from "./components/todos/Todos";
 import Activetodos from "./components/activetodo/Activetodos";
 import Completetodos from "./components/completetodo/Completetodos";
+import { Card, Input, Divider, Button } from "antd";
+import { Link, Route, Switch, withRouter } from "react-router-dom";
+import { DownOutlined } from "@ant-design/icons";
+import * as actionTypes from "./store/action";
+import "antd/dist/antd.css";
+import "./App.css";
 
 class App extends Component {
   constructor(props) {
     super(props);
   }
 
-  state = {
-    todo: "",
-    editedTodo: "",
-    todoList: [],
-    isEdit: false,
-    editTodoId: null,
-    isHovered: {},
-  };
-
+  /**
+   * This method is event handler.
+   * It creates TODO by calling redux
+   * dispatcher method onCreateTodo.
+   *
+   * @param {event} e
+   */
   createTodo = (e) => {
     e.preventDefault();
-    if (!!this.state.todo) {
-      this.setState({
-        todoList: [
-          ...this.state.todoList,
-          { id: uuid(), todo: this.state.todo, isCompleted: false },
-        ],
-        todo: "",
+    if (!!this.props.todo) {
+      this.props.onCreateTodo({
+        id: uuid(),
+        todo: this.props.todo,
+        isCompleted: false,
       });
     }
   };
 
+  /**
+   * This method is event handler.
+   * It updates TODO by calling redux
+   * dispatcher method onUpdateTodo.
+   *
+   * @param {event} e
+   */
   updateTodo = (e) => {
     e.preventDefault();
-    const todoList = this.state.todoList.slice();
+    const todoList = this.props.todoList.slice();
     const editedItem = todoList.find(
-      (item) => item.id === this.state.editTodoId
+      (item) => item.id === this.props.editTodoId
     );
     const editedItemIndex = todoList.findIndex(
-      (item) => item.id === this.state.editTodoId
+      (item) => item.id === this.props.editTodoId
     );
-    editedItem.todo = this.state.editedTodo;
-    if (!!this.state.editedTodo) {
+    editedItem.todo = this.props.editedTodo;
+    if (!!this.props.editedTodo) {
       todoList.splice(editedItemIndex, 1, editedItem);
       const stateObj = {
         todoList,
-        editTodoId: null,
+        editTodoId: "",
         editedTodo: "",
         isEdit: false,
       };
-      this.setState(stateObj);
+      this.props.onUpdateTodo(stateObj);
     }
   };
 
+  /**
+   * Input event handler.
+   * Set state on by calling
+   * diispatch method onChangeTodo.
+   *
+   * @param {event} e
+   */
   handleOnChange = (e) => {
     e.preventDefault();
-    this.setState({ todo: e.target.value });
+    this.props.onChangeTodo(e.target.value);
   };
 
+  /**
+   * Edit Input event handler.
+   * Set state on by calling
+   * diispatch method onChangeEditTodo.
+   *
+   * @param {event} e
+   */
   handleEditOnChange = (e) => {
     e.preventDefault();
-    this.setState({ editedTodo: e.target.value });
+    this.props.onChangeEditTodo(e.target.value);
   };
 
+  /**
+   * Event handler for double click.
+   * Double click on todo item pass todo id
+   * to this method and dispatch action to
+   * edit todo by executing onEditTodo.
+   *
+   * @param {string} id
+   */
   handleDoubleClick = (id) => {
-    const editedItem = this.state.todoList.find((item) => item.id === id);
-    this.setState({
+    const editedItem = this.props.todoList.find((item) => item.id === id);
+    this.props.onEditTodo({
       isEdit: true,
       editTodoId: id,
       editedTodo: editedItem.todo,
     });
   };
 
+  /**
+   * By clicking on the checkbox of todo item
+   * pass todo object to this method. It dispatch
+   * onCheckTodo method.
+   *
+   * @param {object} item
+   */
   handleCheck = (item) => {
-    const todoList = this.state.todoList.slice();
+    const todoList = this.props.todoList.slice();
     const todoItem = todoList.find((it) => it.id === item.id);
     todoItem.isCompleted = !todoItem.isCompleted;
     const index = todoList.findIndex((it) => it.id === item.id);
     todoList.splice(index, 1, todoItem);
-    this.setState({ todoList });
+    this.props.onCheckTodo(todoList);
   };
 
+  /**
+   * By clicking on the close icon of todo item
+   * pass todo object to this method. It dispatch
+   * onCheckTodo method.
+   *
+   * @param {object} item
+   */
   deleteSingleTodo = (item) => {
-    const newTodoList = this.state.todoList.slice();
+    const newTodoList = this.props.todoList.slice();
     const todoList = newTodoList.filter((it) => it.id !== item.id);
-    this.setState({ todoList });
+    this.props.onDeleteTodo(todoList);
   };
 
+  /**
+   * Mouse-enter event handler.
+   * Dispatch onHoverState method to show the
+   * close icon on each todo item
+   *
+   * @param {number} index
+   */
   handleMouseEnter = (index) => {
-    this.setState((prevState) => {
-      return { isHovered: { ...prevState.isHovered, [index]: true } };
-    });
+    this.props.onHoverState({ [index]: true });
   };
 
+  /**
+   * Mouse-leave event handler.
+   * Dispatch onHoverState method to show the
+   * close icon on each todo item
+   *
+   * @param {number} index
+   */
   handleMouseLeave = (index) => {
-    this.setState((prevState) => {
-      return { isHovered: { ...prevState.isHovered, [index]: false } };
-    });
+    this.props.onHoverState({ [index]: false });
   };
 
   render() {
+    // How much active todo items left
     const itemLeft = () => {
-      const len = this.state.todoList.filter((item) => !item.isCompleted)
+      const len = this.props.todoList.filter((item) => !item.isCompleted)
         .length;
       if (len > 1) {
         return <span className="items-left">{len} items left</span>;
@@ -116,18 +166,19 @@ class App extends Component {
       return <span className="items-left">{len} item left</span>;
     };
 
+    // Clear completed node for clear complete todo from list
     const renderClearCompleted = () => {
-      const notCompletedTodoList = this.state.todoList.filter(
+      const notCompletedTodoList = this.props.todoList.filter(
         (item) => !item.isCompleted
       );
-      const len = this.state.todoList.filter((item) => item.isCompleted).length;
+      const len = this.props.todoList.filter((item) => item.isCompleted).length;
       if (len > 0) {
         return (
           <a
             className="clear-footer-button"
             onClick={(e) => {
               e.preventDefault();
-              this.setState({ todoList: notCompletedTodoList });
+              this.props.onClearCompletedTodo(notCompletedTodoList);
             }}
           >
             Clear Completed
@@ -144,13 +195,14 @@ class App extends Component {
       return "footer-button";
     };
 
+    // Card element with input and todo list rendered conditionally
     const renderedCard = () => {
-      if (this.state.todoList.length) {
+      if (this.props.todoList.length) {
         const todoProps = {
-          isEdit: this.state.isEdit,
-          isHovered: this.state.isHovered,
-          editTodoId: this.state.editTodoId,
-          editedTodo: this.state.editedTodo,
+          isEdit: this.props.isEdit,
+          isHovered: this.props.isHovered,
+          editTodoId: this.props.editTodoId,
+          editedTodo: this.props.editedTodo,
           updateTodo: this.updateTodo,
           deleteSingleTodo: this.deleteSingleTodo,
           handleCheck: this.handleCheck,
@@ -160,7 +212,7 @@ class App extends Component {
           handleDoubleClick: this.handleDoubleClick,
         };
 
-        const todoList = this.state.todoList.slice();
+        const todoList = this.props.todoList.slice();
         const activeTodoList = todoList.filter((item) => !item.isCompleted);
         const completedTodoList = todoList.filter((item) => item.isCompleted);
 
@@ -170,11 +222,12 @@ class App extends Component {
               <DownOutlined className="down-icon" />
               <Input
                 className="text-input"
+                autoFocus={true}
                 placeholder="What needs to be done?"
                 name="todo"
                 onChange={this.handleOnChange}
                 onPressEnter={this.createTodo}
-                value={this.state.todo}
+                value={this.props.todo}
               />
               <Switch>
                 <Route
@@ -203,7 +256,7 @@ class App extends Component {
                     <Todos
                       {...props}
                       {...todoProps}
-                      todoList={this.state.todoList}
+                      todoList={this.props.todoList}
                     />
                   )}
                 />
@@ -253,7 +306,7 @@ class App extends Component {
               name="todo"
               onChange={this.handleOnChange}
               onPressEnter={this.createTodo}
-              value={this.state.todo}
+              value={this.props.todo}
             />
           </Card>
         </div>
@@ -271,4 +324,40 @@ class App extends Component {
   }
 }
 
-export default withRouter(App);
+/**
+ * This method need to pass to connect method as parameter
+ *
+ * @param {object} state
+ */
+const mapStateToProps = (state) => {
+  return state;
+};
+
+/**
+ * This method need to pass to connect method as parameter
+ *
+ * @param {*} dispatch
+ */
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onChangeTodo: (todo) => dispatch({ type: actionTypes.CHANGE_TODO, todo }),
+    onChangeEditTodo: (todo) =>
+      dispatch({ type: actionTypes.CHANGE_EDIT_TODO, todo }),
+    onHoverState: (hoverState) =>
+      dispatch({ type: actionTypes.HOVER_STATE, hoverState }),
+    onCreateTodo: (todoObj) =>
+      dispatch({ type: actionTypes.CREATE_TODO, todoObj }),
+    onEditTodo: (editTodoObj) =>
+      dispatch({ type: actionTypes.EDIT_TODO, editTodoObj }),
+    onUpdateTodo: (stateObj) =>
+      dispatch({ type: actionTypes.UPDATE_TODO, stateObj }),
+    onDeleteTodo: (todoList) =>
+      dispatch({ type: actionTypes.DELETE_TODO, todoList }),
+    onCheckTodo: (todoList) =>
+      dispatch({ type: actionTypes.CHECK_TODO, todoList }),
+    onClearCompletedTodo: (todoList) =>
+      dispatch({ type: actionTypes.CLEAR_COMPLETE_TODO, todoList }),
+  };
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
