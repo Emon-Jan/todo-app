@@ -60,7 +60,7 @@
 .text-input::placeholder {
   font-style: italic;
   font-weight: 500;
-  color: #dcdee4;
+  color: #bcbcbe;
 }
 
 .ant-card-body {
@@ -87,6 +87,10 @@
   margin: 0;
 }
 
+.todo-div {
+  position: relative;
+}
+
 .close-icon {
   position: absolute;
   top: 22px;
@@ -104,7 +108,7 @@
 
 .check-text {
   text-decoration: line-through;
-  color: #dcdee4;
+  color: #bcbcbe;
 }
 
 .down-icon {
@@ -112,17 +116,17 @@
   top: 18px;
   left: 15px;
   font-size: 16px;
-  color: #dcdee4;
+  color: #bcbcbe;
   z-index: 1;
 }
 
 .card-panel {
   width: 45%;
   max-width: 600px;
-  min-width: 340px;
+  min-width: 360px;
   font-size: large;
-  box-shadow: 1px 1px 6px -1px rgba(0, 0, 0, 0.16),
-    -1px -1px 6px -1px rgba(0, 0, 0, 0.12);
+  box-shadow: -2px -2px 4px 2px rgba(0, 0, 0, 0.16),
+    2px 2px 4px 4px rgba(0, 0, 0, 0.16);
 }
 
 .card-footer {
@@ -136,30 +140,30 @@
 .card-div-one {
   width: 44%;
   max-width: 595px;
-  min-width: 335px;
+  min-width: 345px;
   height: 6px;
   background: #fff;
   border-radius: 2px;
   border: 1px solid #f0f0f0;
-  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
-    0 0px 6px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.16);
+  margin-top: 1px;
 }
 
 .card-div-two {
   width: 43%;
   max-width: 590px;
-  min-width: 330px;
+  min-width: 335px;
   height: 5px;
   background: #fff;
   border-radius: 2px;
   border: 1px solid #f0f0f0;
-  box-shadow: 0 1px 2px -2px rgba(0, 0, 0, 0.16),
-    0 0px 6px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0px 2px 2px 1px rgb(0, 0, 0, 0.16);
+  margin-top: 2px;
 }
 
 .footer-button,
 .clear-footer-button {
-  color: #b1b1b1;
+  color: #a1a1a1;
   font-size: small;
 }
 
@@ -169,8 +173,8 @@
 
 .footer-button__active {
   padding: 0 5px 0 5px;
-  color: #b1b1b1;
-  border: 1px solid #dcdee4;
+  color: #a1a1a1;
+  border: 1px solid #bdbdbd;
   font-size: small;
   background: none;
 }
@@ -178,8 +182,8 @@
 .footer-button__active:hover,
 .footer-button__active:focus,
 .footer-button__active:active {
-  color: #b1b1b1;
-  border: 1px solid #dcdee4;
+  color: #a1a1a1;
+  border: 1px solid #bdbdbd;
   background: none;
 }
 
@@ -192,15 +196,15 @@
 .footer-button:hover,
 .footer-button:focus,
 .footer-button:active {
-  color: #b1b1b1;
-  border: 1px solid #dcdee4;
+  color: #a1a1a1;
+  border: 1px solid #bdbdbd;
   background: none;
 }
 
 .clear-footer-button:hover,
 .clear-footer-button:focus,
 .clear-footer-button:active {
-  color: #b1b1b1;
+  color: #a1a1a1;
   border: none;
   background: none;
   text-decoration: underline;
@@ -208,7 +212,7 @@
 
 .items-left {
   width: 90%;
-  color: #b1b1b1;
+  color: #a1a1a1;
   font-size: small;
   line-height: 25px;
 }

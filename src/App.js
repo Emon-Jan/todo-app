@@ -304,6 +304,7 @@ class App extends Component {
           <Card className="card-panel">
             <Input
               className="text-input"
+              autoFocus={true}
               placeholder="What needs to be done?"
               name="todo"
               onChange={this.handleOnChange}
