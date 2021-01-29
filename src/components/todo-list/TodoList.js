@@ -3,7 +3,7 @@ import { List, Divider } from "antd";
 import Todo from "../todo/todo";
 
 const TodoList = (props) => {
-  return props.todoList.map((item, index) => (
+  return props.todoList.map((item) => (
     <div key={item.id}>
       <Divider className="divider" />
       <List
