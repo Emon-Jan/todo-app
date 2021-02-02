@@ -1,17 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import uuid from "react-uuid";
-import Todos from "./components/todos/Todos";
-import Activetodos from "./components/activetodo/Activetodos";
-import Completetodos from "./components/completetodo/Completetodos";
 import { Card, Input, Divider, Button } from "antd";
-import { Link, Route, Switch, withRouter } from "react-router-dom";
 import { DownOutlined } from "@ant-design/icons";
 import * as actionTypes from "./store/action";
 import "antd/dist/antd.css";
 import "./App.css";
+import TodoList from "./components/todo-list/TodoList";
+
+const todoFilter = {
+  ALL: "all",
+  ACTIVE: "active",
+  COMPLETED: "completed",
+};
 
 const App = (props) => {
+  const [todoFilterType, setTodoFilterType] = useState(todoFilter.ALL);
+
   /**
    * This method is event handler.
    * It creates TODO by calling redux
@@ -159,8 +164,8 @@ const App = (props) => {
     return null;
   };
 
-  const footerButtonStyle = (pathName) => {
-    if (props.location.pathname === pathName) {
+  const footerButtonStyle = (filterType) => {
+    if (todoFilterType === filterType) {
       return "footer-button__active";
     }
     return "footer-button";
@@ -181,9 +186,11 @@ const App = (props) => {
         handleDoubleClick: handleDoubleClick,
       };
 
-      const todoList = props.todoList.slice();
-      const activeTodoList = todoList.filter((item) => !item.isCompleted);
-      const completedTodoList = todoList.filter((item) => item.isCompleted);
+      let todoList = props.todoList.slice();
+      if (todoFilterType === todoFilter.ACTIVE)
+        todoList = todoList.filter((item) => !item.isCompleted);
+      else if (todoFilterType === todoFilter.COMPLETED)
+        todoList = todoList.filter((item) => item.isCompleted);
 
       return (
         <div className="layout">
@@ -198,34 +205,9 @@ const App = (props) => {
               onPressEnter={createTodo}
               value={props.todo}
             />
-            <Switch>
-              <Route
-                path="/active"
-                render={(props) => (
-                  <Activetodos
-                    {...props}
-                    {...todoProps}
-                    todoList={activeTodoList}
-                  />
-                )}
-              />
-              <Route
-                path="/completed"
-                render={(props) => (
-                  <Completetodos
-                    {...props}
-                    {...todoProps}
-                    todoList={completedTodoList}
-                  />
-                )}
-              />
-              <Route
-                path="/"
-                render={(props) => (
-                  <Todos {...props} {...todoProps} todoList={todoList} />
-                )}
-              />
-            </Switch>
+
+            <TodoList {...props} {...todoProps} todoList={todoList} />
+
             <Divider className="divider" />
             <div className="card-footer">
               <div className="card-footer__first">{itemLeft()}</div>
@@ -233,23 +215,26 @@ const App = (props) => {
                 <Button
                   type="text"
                   size="small"
-                  className={footerButtonStyle("/")}
+                  className={footerButtonStyle(todoFilter.ALL)}
+                  onClick={() => setTodoFilterType(todoFilter.ALL)}
                 >
-                  <Link to="/">All</Link>
+                  <span>All</span>
                 </Button>
                 <Button
                   type="text"
                   size="small"
-                  className={footerButtonStyle("/active")}
+                  className={footerButtonStyle(todoFilter.ACTIVE)}
+                  onClick={() => setTodoFilterType(todoFilter.ACTIVE)}
                 >
-                  <Link to="/active">Active</Link>
+                  <span>Active</span>
                 </Button>
                 <Button
                   type="text"
                   size="small"
-                  className={footerButtonStyle("/completed")}
+                  className={footerButtonStyle(todoFilter.COMPLETED)}
+                  onClick={() => setTodoFilterType(todoFilter.COMPLETED)}
                 >
-                  <Link to="/completed">Completed</Link>
+                  <span>Completed</span>
                 </Button>
               </div>
               <div className="card-footer__third">{renderClearCompleted()}</div>
@@ -321,4 +306,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default connect(mapStateToProps, mapDispatchToProps)(App);
