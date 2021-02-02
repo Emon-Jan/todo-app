@@ -6,7 +6,6 @@ const initialState = {
   todoList: [],
   isEdit: false,
   editTodoId: "",
-  isHovered: {},
 };
 
 const reducer = (state = initialState, action) => {
@@ -57,11 +56,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         todoList: action.todoList,
-      };
-    case actionTypes.HOVER_STATE:
-      return {
-        ...state,
-        isHovered: action.hoverState,
       };
     default:
       return state;
